@@ -1,0 +1,15 @@
+#!ipxe
+set base-url https://guac.sapii.dev/static
+set iso-file nixos-minimal-26.05.20260213.a82ccc3-x86_64-linux.iso
+
+echo Loading ISO into memory...
+
+# Download memdisk from ipxe.org (or host your own)
+kernel http://boot.ipxe.org/memdisk iso raw
+
+# Load the ISO as initrd
+initrd ${base-url}/${iso-file}
+
+# Boot with ISO parameters
+imgargs memdisk iso raw
+boot

@@ -7,21 +7,21 @@
     <generator>Hugo</generator>
     <language>en-US</language>
     <copyright>© 2025 - Sapi or Sapii - This work is licensed under a &lt;a href=&#39;https://creativecommons.org/licenses/by-nc-nd/4.0/&#39; rel=&#39;license&#39;&gt;Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License&lt;/a&gt;.</copyright>
-    <lastBuildDate>Sat, 29 Nov 2025 12:30:05 -0500</lastBuildDate>
+    <lastBuildDate>Sat, 07 Feb 2026 12:22:47 -0500</lastBuildDate>
     <atom:link href="//localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Lactf_tictacno_writeup</title>
+      <link>//localhost:1313/blog/lactf_tictacno_writeup/</link>
+      <pubDate>Sat, 07 Feb 2026 12:22:47 -0500</pubDate>
+      <guid>//localhost:1313/blog/lactf_tictacno_writeup/</guid>
+      <description>&lt;p&gt;I recently participated in the &lt;a href=&#34;https://platform.lac.tf/&#34;&gt;2026 LACTF&lt;/a&gt; and had a blast! The specific challenge that I liked was called pwn/tic-tac-no.&lt;/p&gt;&#xA;&lt;h1 id=&#34;overview&#34;&gt;Overview&lt;/h1&gt;&#xA;&lt;p&gt;We are told to nc in and get:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;You want the flag? You&amp;#39;ll have to beat me first!&#xA;   |   |&#xA;---|---|---&#xA;   |   |&#xA;---|---|---&#xA;   |   |&#xA;&#xA;Enter row #(1-3):&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Pretty self explanatory, you enter the row and column number and it puts the X in said spot and then gives the computer its turn.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Nixos on Libre Renegade</title>
       <link>//localhost:1313/blog/nixos_renegade/</link>
       <pubDate>Sat, 29 Nov 2025 12:30:05 -0500</pubDate>
       <guid>//localhost:1313/blog/nixos_renegade/</guid>
       <description>&lt;h1 id=&#34;nixos-on-libre-renegade&#34;&gt;Nixos on Libre Renegade&lt;/h1&gt;&#xA;&lt;p&gt;Over thanksgiving I spent quite the time trying to setup Nixos on the Libre Board Renegade and I&amp;rsquo;d like to share some things here.&lt;/p&gt;&#xA;&lt;h2 id=&#34;existing-documentation&#34;&gt;Existing Documentation&lt;/h2&gt;&#xA;&lt;p&gt;So the only pieces of existing documentation I could find is the existing &lt;a href=&#34;https://wiki.nixos.org/wiki/NixOS_on_ARM/Libre_Computer_ROC-RK3328-CC&#34;&gt;nixos wiki&lt;/a&gt; page as well as &lt;a href=&#34;https://pc-hass.de/blog/nixos-on-renegade/&#34;&gt;this blog post&lt;/a&gt;. The wiki page details the basic configuration setting up a standard NixOS image for aarch64 however the blog post says that none of the prebuilt images would work ( likely due to the a different U-Boot ) and so it solves this by writing the official Libre Computer U-Boot to the sdImage.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Internship</title>
-      <link>//localhost:1313/blog/internship/</link>
-      <pubDate>Sat, 30 Nov 2024 18:39:41 -0500</pubDate>
-      <guid>//localhost:1313/blog/internship/</guid>
-      <description>&lt;h1 id=&#34;city-of-raleigh-internship&#34;&gt;City of Raleigh Internship&lt;/h1&gt;&#xA;&lt;p&gt;Over last summer I did an internship at the City of Raleigh in their Youth Employment Program.&#xA;Here is a rundown of it.&lt;/p&gt;&#xA;&lt;h2 id=&#34;job-site&#34;&gt;Job Site&lt;/h2&gt;&#xA;&lt;p&gt;We mainly operated remotely, at our computers at home. Communication was handled through a special app on our phones and also the Slack Desktop Application.&#xA;Sometimes we would get to go to in-person events at places like the McKimmon Center at NCSU or some community gyms.&lt;/p&gt;</description>
     </item>
     <item>
       <title>About</title>

@@ -93,50 +93,50 @@ Existing Documentation So the only pieces of existing documentation I could find
 <p>So the only pieces of existing documentation I could find is the existing <a href="https://wiki.nixos.org/wiki/NixOS_on_ARM/Libre_Computer_ROC-RK3328-CC">nixos wiki</a> page as well as <a href="https://pc-hass.de/blog/nixos-on-renegade/">this blog post</a>. The wiki page details the basic configuration setting up a standard NixOS image for aarch64 however the blog post says that none of the prebuilt images would work ( likely due to the a different U-Boot ) and so it solves this by writing the official Libre Computer U-Boot to the sdImage.</p>
 <h2 id="the-configuration">The Configuration</h2>
 <h3 id="base-configuration">Base Configuration</h3>
-<pre tabindex="0"><code>{
-  description = &#34;NixOS SD card image for Libre Renegade (ROC-RK3328-CC)&#34;;
-
-  inputs = {
-    nixpkgs.url = &#34;github:NixOS/nixpkgs/nixos-25.05&#34;;
-  };
-  outputs = { self, nixpkgs, ... }@inputs:
-    let
-      pkgs = import nixpkgs { system = &#34;aarch64-linux&#34;; };
-      inherit (nixpkgs) lib;
-    in
-    {
-      nixosConfigurations = {
-        renegade = nixpkgs.lib.nixosSystem {
-          system = &#34;aarch64-linux&#34;;
-          modules = [
-            &#34;${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix&#34;
-            ];
-        };
-      };
-      packages = {
-        # For the target system
-        aarch64-linux.renegade = self.nixosConfigurations.renegade.config.system.build.sdImage;
-
-        # For your build system (x86_64)
-        x86_64-linux.renegade = self.nixosConfigurations.renegade.config.system.build.sdImage;
-      };
-
-    };
-}
-</code></pre><p>This is a really simple system configuration flake that outputs the sdImage as a package, however <strong>won&rsquo;t boot due to not having the correct U-Boot</strong>. Build with</p>
+<div class="highlight"><pre tabindex="0" style="color:#ebdbb2;background-color:#282828;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nix" data-lang="nix"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  description <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;NixOS SD card image for Libre Renegade (ROC-RK3328-CC)&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  inputs <span style="color:#fe8019">=</span> {
+</span></span><span style="display:flex;"><span>    nixpkgs<span style="color:#fe8019">.</span>url <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;github:NixOS/nixpkgs/nixos-25.05&#34;</span>;
+</span></span><span style="display:flex;"><span>  };
+</span></span><span style="display:flex;"><span>  outputs <span style="color:#fe8019">=</span> { self<span style="color:#fe8019">,</span> nixpkgs<span style="color:#fe8019">,</span> <span style="color:#fe8019">...</span> }<span style="color:#fe8019">@</span>inputs:
+</span></span><span style="display:flex;"><span>    <span style="color:#fe8019">let</span>
+</span></span><span style="display:flex;"><span>      pkgs <span style="color:#fe8019">=</span> <span style="color:#fe8019">import</span> nixpkgs { system <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;aarch64-linux&#34;</span>; };
+</span></span><span style="display:flex;"><span>      <span style="color:#fe8019">inherit</span> (nixpkgs) lib;
+</span></span><span style="display:flex;"><span>    <span style="color:#fe8019">in</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      nixosConfigurations <span style="color:#fe8019">=</span> {
+</span></span><span style="display:flex;"><span>        renegade <span style="color:#fe8019">=</span> nixpkgs<span style="color:#fe8019">.</span>lib<span style="color:#fe8019">.</span>nixosSystem {
+</span></span><span style="display:flex;"><span>          system <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;aarch64-linux&#34;</span>;
+</span></span><span style="display:flex;"><span>          modules <span style="color:#fe8019">=</span> [
+</span></span><span style="display:flex;"><span>            <span style="color:#b8bb26">&#34;</span><span style="color:#b8bb26">${</span>nixpkgs<span style="color:#b8bb26">}</span><span style="color:#b8bb26">/nixos/modules/installer/sd-card/sd-image-aarch64.nix&#34;</span>
+</span></span><span style="display:flex;"><span>            ];
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>      };
+</span></span><span style="display:flex;"><span>      packages <span style="color:#fe8019">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#928374;font-style:italic"># For the target system</span>
+</span></span><span style="display:flex;"><span>        aarch64-linux<span style="color:#fe8019">.</span>renegade <span style="color:#fe8019">=</span> self<span style="color:#fe8019">.</span>nixosConfigurations<span style="color:#fe8019">.</span>renegade<span style="color:#fe8019">.</span>config<span style="color:#fe8019">.</span>system<span style="color:#fe8019">.</span>build<span style="color:#fe8019">.</span>sdImage;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#928374;font-style:italic"># For your build system (x86_64)</span>
+</span></span><span style="display:flex;"><span>        x86_64-linux<span style="color:#fe8019">.</span>renegade <span style="color:#fe8019">=</span> self<span style="color:#fe8019">.</span>nixosConfigurations<span style="color:#fe8019">.</span>renegade<span style="color:#fe8019">.</span>config<span style="color:#fe8019">.</span>system<span style="color:#fe8019">.</span>build<span style="color:#fe8019">.</span>sdImage;
+</span></span><span style="display:flex;"><span>      };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This is a really simple system configuration flake that outputs the sdImage as a package, however <strong>won&rsquo;t boot due to not having the correct U-Boot</strong>. Build with</p>
 <pre tabindex="0"><code>nix build .#renegade 
 </code></pre><h3 id="adding-u-boot">Adding U-Boot</h3>
 <p>The blog post provides a really handy way to do this. After adding this, the image is bootable, this U-Boot image also enables USB, meaning the systemd service described in the wiki can be ommited ( it actually fails to start even ).</p>
-<pre tabindex="0"><code>  sdImage.postBuildCommands = let
-    rk3328-uboot = fetchurl {
-      url = &#34;https://boot.libre.computer/ci/roc-rk3328-cc&#34;;
-      hash = &#34;sha256-Y5yMmU/LyMVJi94vrYDpBM+4qwUfILwP+gVUToAXteA=&#34;;
-    };
-  in
-  &#39;&#39;
-    dd if=${rk3328-uboot} of=$img conv=fsync,notrunc bs=512 seek=64
-  &#39;&#39;;
-</code></pre>
+<div class="highlight"><pre tabindex="0" style="color:#ebdbb2;background-color:#282828;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nix" data-lang="nix"><span style="display:flex;"><span>sdImage<span style="color:#fe8019">.</span>postBuildCommands = <span style="color:#fe8019">let</span>
+</span></span><span style="display:flex;"><span>  rk3328-uboot <span style="color:#fe8019">=</span> fetchurl {
+</span></span><span style="display:flex;"><span>    url <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;https://boot.libre.computer/ci/roc-rk3328-cc&#34;</span>;
+</span></span><span style="display:flex;"><span>    hash <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;sha256-Y5yMmU/LyMVJi94vrYDpBM+4qwUfILwP+gVUToAXteA=&#34;</span>;
+</span></span><span style="display:flex;"><span>  };
+</span></span><span style="display:flex;"><span><span style="color:#fe8019">in</span>
+</span></span><span style="display:flex;"><span><span style="color:#b8bb26">&#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">  dd if=</span><span style="color:#b8bb26">${</span>rk3328-uboot<span style="color:#b8bb26">}</span><span style="color:#b8bb26"> of=$img conv=fsync,notrunc bs=512 seek=64
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">&#39;&#39;</span>;
+</span></span></code></pre></div>
 
 <div class="cc-source" style="font-size: 0.8rem; color: #666;">
     <span class="cc-source-label">Source:</span>
@@ -154,217 +154,217 @@ Existing Documentation So the only pieces of existing documentation I could find
 
 <h3 id="adding-bootloader">Adding bootloader</h3>
 <p>U-Boot uses a special text file almost like GRUB stored at <code>/boot/</code> for the boot entries, make sure to enable this if you are to rebuild on the Libre Renegade itself. ( I ended up rebuilding and garbage collecting without this enabled and it deleted the kernel, bricking my system ).</p>
-<pre tabindex="0"><code>boot.loader.generic-extlinux-compatible.enable = true;
-</code></pre><h3 id="configuring-the-fan">Configuring the fan</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ebdbb2;background-color:#282828;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nix" data-lang="nix"><span style="display:flex;"><span>boot<span style="color:#fe8019">.</span>loader<span style="color:#fe8019">.</span>generic-extlinux-compatible<span style="color:#fe8019">.</span>enable = <span style="color:#d3869b">true</span>;
+</span></span></code></pre></div><h3 id="configuring-the-fan">Configuring the fan</h3>
 <p>Now the Libre Renegade has a special case you can buy called the &ldquo;LoveRPi Active Cooling Case&rdquo;, which itself comes with a fan. Now the fan is pretty loud, even if you switch to the 3.3v pins instead of 5v. There was a <a href="https://github.com/libre-computer-project/libretech-wiring-tool/commit/f2509bb1f7705d6061782881367a622820cbce59">PR</a> to the libretech-wiring-tool adding DeviceTree files specifically to enable PWM on pins 12. PWM is used to control the fan speed. NixOS already provides configuration options to enable DeviceTree files via <code>hardware.deviceTree.overlays</code>.</p>
-<pre tabindex="0"><code>let
-  pkgs = import nixpkgs { system = &#34;aarch64-linux&#34;; };
-  repo = pkgs.fetchFromGitHub {
-    owner = &#34;libre-computer-project&#34;;
-    repo = &#34;libretech-wiring-tool&#34;;
-    rev = &#34;0078dc04ccb4daabc303d5cec1a4f4222db5b924&#34;;
-    hash = &#34;sha256-ZZvMetODFPamzqaMrf/EMvCS56ri0iKNG2UpKpOgQ4U=&#34;;
-  };
-  pwm-2-dts-file = &#34;${repo}/libre-computer/roc-rk3328-cc/dt/pwm-2.dts&#34;;
-  pwm-2-fan-dts-file = &#34;${repo}/libre-computer/roc-rk3328-cc/dt/pwm-2-fan.dts&#34;;
-in
-{ config, pkgs, ... }:
-{
-  # Enable device tree support
-  hardware.deviceTree.enable = true;
-
-  # Apply the overlays
-  hardware.deviceTree.overlays = [
-    {
-      name = &#34;pwm2&#34;;
-      dtsFile = pwm-2-dts-file;
-    }
-    {
-      name = &#34;pwm2-fan&#34;; 
-      dtsFile = pwm-2-fan-dts-file;
-    }
-  ];
-
-  # Ensure the kernel has pwm-fan and pwm support
-  boot.kernelModules = lib.mkAfter [
-    &#34;pwm-fan&#34;
-    &#34;pwm-rockchip&#34;
-  ];
-}
-</code></pre><p><strong>The fan PWM declaration needs to be below the PWM 2 one because it depends on it.</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#ebdbb2;background-color:#282828;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nix" data-lang="nix"><span style="display:flex;"><span><span style="color:#fe8019">let</span>
+</span></span><span style="display:flex;"><span>  pkgs <span style="color:#fe8019">=</span> <span style="color:#fe8019">import</span> nixpkgs { system <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;aarch64-linux&#34;</span>; };
+</span></span><span style="display:flex;"><span>  repo <span style="color:#fe8019">=</span> pkgs<span style="color:#fe8019">.</span>fetchFromGitHub {
+</span></span><span style="display:flex;"><span>    owner <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;libre-computer-project&#34;</span>;
+</span></span><span style="display:flex;"><span>    repo <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;libretech-wiring-tool&#34;</span>;
+</span></span><span style="display:flex;"><span>    rev <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;0078dc04ccb4daabc303d5cec1a4f4222db5b924&#34;</span>;
+</span></span><span style="display:flex;"><span>    hash <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;sha256-ZZvMetODFPamzqaMrf/EMvCS56ri0iKNG2UpKpOgQ4U=&#34;</span>;
+</span></span><span style="display:flex;"><span>  };
+</span></span><span style="display:flex;"><span>  pwm-2-dts-file <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;</span><span style="color:#b8bb26">${</span>repo<span style="color:#b8bb26">}</span><span style="color:#b8bb26">/libre-computer/roc-rk3328-cc/dt/pwm-2.dts&#34;</span>;
+</span></span><span style="display:flex;"><span>  pwm-2-fan-dts-file <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;</span><span style="color:#b8bb26">${</span>repo<span style="color:#b8bb26">}</span><span style="color:#b8bb26">/libre-computer/roc-rk3328-cc/dt/pwm-2-fan.dts&#34;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#fe8019">in</span>
+</span></span><span style="display:flex;"><span>{ config<span style="color:#fe8019">,</span> pkgs<span style="color:#fe8019">,</span> <span style="color:#fe8019">...</span> }:
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#928374;font-style:italic"># Enable device tree support</span>
+</span></span><span style="display:flex;"><span>  hardware<span style="color:#fe8019">.</span>deviceTree<span style="color:#fe8019">.</span>enable <span style="color:#fe8019">=</span> <span style="color:#d3869b">true</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#928374;font-style:italic"># Apply the overlays</span>
+</span></span><span style="display:flex;"><span>  hardware<span style="color:#fe8019">.</span>deviceTree<span style="color:#fe8019">.</span>overlays <span style="color:#fe8019">=</span> [
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      name <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;pwm2&#34;</span>;
+</span></span><span style="display:flex;"><span>      dtsFile <span style="color:#fe8019">=</span> pwm-2-dts-file;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      name <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;pwm2-fan&#34;</span>; 
+</span></span><span style="display:flex;"><span>      dtsFile <span style="color:#fe8019">=</span> pwm-2-fan-dts-file;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  ];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#928374;font-style:italic"># Ensure the kernel has pwm-fan and pwm support</span>
+</span></span><span style="display:flex;"><span>  boot<span style="color:#fe8019">.</span>kernelModules <span style="color:#fe8019">=</span> lib<span style="color:#fe8019">.</span>mkAfter [
+</span></span><span style="display:flex;"><span>    <span style="color:#b8bb26">&#34;pwm-fan&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#b8bb26">&#34;pwm-rockchip&#34;</span>
+</span></span><span style="display:flex;"><span>  ];
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>The fan PWM declaration needs to be below the PWM 2 one because it depends on it.</strong></p>
 <h3 id="controlling-the-fan">Controlling the fan</h3>
 <p>Since the fan speed will be set based on you CPU temperature, you need to read that first. The common path for this is at <code>/sys/class/hwmon/</code>, however the paths after this differ, and you need to find them. The file for the CPU temp is <code>temp1_input</code> and the PWM file is at <code>/pwm1</code>.
 I have this incredibly simple python script derived from the <a href="https://github.com/libre-computer-project/libretech-wiring-tool/pull/15#issuecomment-3537427128">PR</a>, there is also another <a href="https://github.com/angelicadvocate/renegade-fan-control/tree/main?tab=readme-ov-file">project</a> that aims to have enable fan control, you can use their <a href="https://github.com/angelicadvocate/renegade-fan-control/blob/main/fan_control.sh">script</a>, it also provides <a href="https://github.com/angelicadvocate/renegade-fan-control/blob/main/LibreRenegadePWM-img1.png">pictures</a> for where to connect the fan pins to the Renegade pins.</p>
 <h4 id="the-script">The Script:</h4>
-<pre tabindex="0"><code>from pathlib import Path
-import time
-fancontrol = Path(&#34;/sys/class/hwmon/hwmon0/pwm1&#34;)
-cpu_temp = Path(&#34;/sys/class/hwmon/hwmon1/temp1_input&#34;)
-
-cpu_handle = open(cpu_temp, &#34;r&#34;)
-fan_handle = open(fancontrol, &#34;w&#34;)
-
-
-
-while True:
-    temp = int(cpu_handle.read()) / 1000
-    cpu_handle.seek(0)
-    fan_speed = 0
-    if temp &lt;= 50:
-        fan_speed = 0
-    elif temp &lt;= 55:
-        fan_speed = 80
-    elif temp &lt;= 65:
-        fan_speed = 128
-    elif temp &lt;= 75:
-        fan_speed = 192
-    else:  # temp &gt; 75
-        fan_speed = 255
-    fan_handle.write(str(fan_speed))
-    fan_handle.seek(0)
-    print(f&#34;CPU Temp: {temp}, setting fan speed: {fan_speed}&#34;)
-    time.sleep(1)
-</code></pre><p>The service definition for this:</p>
-<pre tabindex="0"><code>  systemd.services.simple-fan-control = {
-    enable = true;
-    wantedBy = [ &#34;default.target&#34; ];
-    description = &#34;Incredibly Simple python fan control script&#34;;
-    serviceConfig = {
-      Restart = &#34;always&#34;;
-      RestartSec = 5;
-      ExecStart = &#39;&#39;${pkgs.python3}/bin/python ${fancontrol-script}&#39;&#39;;
-    };
-  };
-</code></pre><p>Beware, the script will start at boot but the PWM or CPU files won&rsquo;t exist yet, so it will fail and keep restarting until they do.</p>
+<div class="highlight"><pre tabindex="0" style="color:#ebdbb2;background-color:#282828;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fe8019">from</span> pathlib <span style="color:#fe8019">import</span> Path
+</span></span><span style="display:flex;"><span><span style="color:#fe8019">import</span> time
+</span></span><span style="display:flex;"><span>fancontrol <span style="color:#fe8019">=</span> Path(<span style="color:#b8bb26">&#34;/sys/class/hwmon/hwmon0/pwm1&#34;</span>)
+</span></span><span style="display:flex;"><span>cpu_temp <span style="color:#fe8019">=</span> Path(<span style="color:#b8bb26">&#34;/sys/class/hwmon/hwmon1/temp1_input&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cpu_handle <span style="color:#fe8019">=</span> <span style="color:#fabd2f">open</span>(cpu_temp, <span style="color:#b8bb26">&#34;r&#34;</span>)
+</span></span><span style="display:flex;"><span>fan_handle <span style="color:#fe8019">=</span> <span style="color:#fabd2f">open</span>(fancontrol, <span style="color:#b8bb26">&#34;w&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fe8019">while</span> <span style="color:#fe8019">True</span>:
+</span></span><span style="display:flex;"><span>    temp <span style="color:#fe8019">=</span> <span style="color:#fabd2f">int</span>(cpu_handle<span style="color:#fe8019">.</span>read()) <span style="color:#fe8019">/</span> <span style="color:#d3869b">1000</span>
+</span></span><span style="display:flex;"><span>    cpu_handle<span style="color:#fe8019">.</span>seek(<span style="color:#d3869b">0</span>)
+</span></span><span style="display:flex;"><span>    fan_speed <span style="color:#fe8019">=</span> <span style="color:#d3869b">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fe8019">if</span> temp <span style="color:#fe8019">&lt;=</span> <span style="color:#d3869b">50</span>:
+</span></span><span style="display:flex;"><span>        fan_speed <span style="color:#fe8019">=</span> <span style="color:#d3869b">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fe8019">elif</span> temp <span style="color:#fe8019">&lt;=</span> <span style="color:#d3869b">55</span>:
+</span></span><span style="display:flex;"><span>        fan_speed <span style="color:#fe8019">=</span> <span style="color:#d3869b">80</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fe8019">elif</span> temp <span style="color:#fe8019">&lt;=</span> <span style="color:#d3869b">65</span>:
+</span></span><span style="display:flex;"><span>        fan_speed <span style="color:#fe8019">=</span> <span style="color:#d3869b">128</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fe8019">elif</span> temp <span style="color:#fe8019">&lt;=</span> <span style="color:#d3869b">75</span>:
+</span></span><span style="display:flex;"><span>        fan_speed <span style="color:#fe8019">=</span> <span style="color:#d3869b">192</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fe8019">else</span>:  <span style="color:#928374;font-style:italic"># temp &gt; 75</span>
+</span></span><span style="display:flex;"><span>        fan_speed <span style="color:#fe8019">=</span> <span style="color:#d3869b">255</span>
+</span></span><span style="display:flex;"><span>    fan_handle<span style="color:#fe8019">.</span>write(<span style="color:#fabd2f">str</span>(fan_speed))
+</span></span><span style="display:flex;"><span>    fan_handle<span style="color:#fe8019">.</span>seek(<span style="color:#d3869b">0</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fabd2f">print</span>(<span style="color:#b8bb26">f</span><span style="color:#b8bb26">&#34;CPU Temp: </span><span style="color:#b8bb26">{</span>temp<span style="color:#b8bb26">}</span><span style="color:#b8bb26">, setting fan speed: </span><span style="color:#b8bb26">{</span>fan_speed<span style="color:#b8bb26">}</span><span style="color:#b8bb26">&#34;</span>)
+</span></span><span style="display:flex;"><span>    time<span style="color:#fe8019">.</span>sleep(<span style="color:#d3869b">1</span>)
+</span></span></code></pre></div><p>The service definition for this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#ebdbb2;background-color:#282828;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nix" data-lang="nix"><span style="display:flex;"><span>systemd<span style="color:#fe8019">.</span>services<span style="color:#fe8019">.</span>simple-fan-control = {
+</span></span><span style="display:flex;"><span>  enable <span style="color:#fe8019">=</span> <span style="color:#d3869b">true</span>;
+</span></span><span style="display:flex;"><span>  wantedBy <span style="color:#fe8019">=</span> [ <span style="color:#b8bb26">&#34;default.target&#34;</span> ];
+</span></span><span style="display:flex;"><span>  description <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;Incredibly Simple python fan control script&#34;</span>;
+</span></span><span style="display:flex;"><span>  serviceConfig <span style="color:#fe8019">=</span> {
+</span></span><span style="display:flex;"><span>    Restart <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;always&#34;</span>;
+</span></span><span style="display:flex;"><span>    RestartSec <span style="color:#fe8019">=</span> <span style="color:#d3869b">5</span>;
+</span></span><span style="display:flex;"><span>    ExecStart <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#39;&#39;</span><span style="color:#b8bb26">${</span>pkgs<span style="color:#fe8019">.</span>python3<span style="color:#b8bb26">}</span><span style="color:#b8bb26">/bin/python </span><span style="color:#b8bb26">${</span>fancontrol-script<span style="color:#b8bb26">}</span><span style="color:#b8bb26">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>  };
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>Beware, the script will start at boot but the PWM or CPU files won&rsquo;t exist yet, so it will fail and keep restarting until they do.</p>
 <h3 id="closing-thoughts">Closing thoughts</h3>
 <p>I love this little thing, it serves as a good K3S control plane server. Make sure to enable binfmt in your system&rsquo;s nix configuration so you can cross compile.</p>
 <h1 id="full-configuration">Full Configuration</h1>
-<pre tabindex="0"><code>{
-  description = &#34;NixOS SD card image for Libre Renegade (ROC-RK3328-CC)&#34;;
-
-  inputs = {
-    nixpkgs.url = &#34;github:NixOS/nixpkgs/nixos-25.05&#34;;
-  };
-  outputs =
-    { self, nixpkgs, ... }@inputs:
-    let
-      pkgs = import nixpkgs { system = &#34;aarch64-linux&#34;; };
-      repo = pkgs.fetchFromGitHub {
-        owner = &#34;libre-computer-project&#34;;
-        repo = &#34;libretech-wiring-tool&#34;;
-        rev = &#34;0078dc04ccb4daabc303d5cec1a4f4222db5b924&#34;;
-        hash = &#34;sha256-ZZvMetODFPamzqaMrf/EMvCS56ri0iKNG2UpKpOgQ4U=&#34;;
-      };
-      pwm-2-dts-file = &#34;${repo}/libre-computer/roc-rk3328-cc/dt/pwm-2.dts&#34;;
-      pwm-2-fan-dts-file = &#34;${repo}/libre-computer/roc-rk3328-cc/dt/pwm-2-fan.dts&#34;;
-      fancontrol-script = pkgs.writeTextFile {
-        name = &#34;fancontrol-script&#34;;
-        text = &#39;&#39;
-          from pathlib import Path
-          import time
-          fancontrol = Path(&#34;/sys/class/hwmon/hwmon0/pwm1&#34;)
-          cpu_temp = Path(&#34;/sys/class/hwmon/hwmon1/temp1_input&#34;)
-
-          cpu_handle = open(cpu_temp, &#34;r&#34;)
-          fan_handle = open(fancontrol, &#34;w&#34;)
-
-
-
-          while True:
-              temp = int(cpu_handle.read()) / 1000
-              cpu_handle.seek(0)
-              fan_speed = 0
-              if temp &lt;= 50:
-                  fan_speed = 0
-              elif temp &lt;= 55:
-                  fan_speed = 80
-              elif temp &lt;= 65:
-                  fan_speed = 128
-              elif temp &lt;= 75:
-                  fan_speed = 192
-              else:  # temp &gt; 75
-                  fan_speed = 255
-              fan_handle.write(str(fan_speed))
-              fan_handle.seek(0)
-              print(f&#34;CPU Temp: {temp}, setting fan speed: {fan_speed}&#34;)
-              time.sleep(1)
-        &#39;&#39;;
-      };
-      inherit (nixpkgs) lib;
-    in
-    {
-      nixosConfigurations = {
-        renegade = nixpkgs.lib.nixosSystem {
-          system = &#34;aarch64-linux&#34;;
-          modules = [
-            &#34;${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix&#34;
-            (
-              {
-                config,
-                lib,
-                pkgs,
-                ...
-              }:
-              {
-                systemd.services.simple-fan-control = {
-                  enable = true;
-                  wantedBy = [ &#34;default.target&#34; ];
-                  description = &#34;Incredibly Simple python fan control script&#34;;
-                  serviceConfig = {
-                    Restart = &#34;always&#34;;
-                    RestartSec = 5;
-                    ExecStart = &#39;&#39;${pkgs.python3}/bin/python ${fancontrol-script}&#39;&#39;;
-                  };
-                };
-                sdImage.postBuildCommands =
-                  let
-                    rk3328-uboot = builtins.fetchurl {
-                      url = &#34;https://boot.libre.computer/ci/roc-rk3328-cc&#34;;
-                      sha256 = &#34;Y5yMmU/LyMVJi94vrYDpBM+4qwUfILwP+gVUToAXteA=&#34;;
-                    };
-                  in
-                  &#39;&#39;
-                    dd if=${rk3328-uboot} of=$img conv=fsync,notrunc bs=512 seek=64
-                  &#39;&#39;;
-                boot.loader.generic-extlinux-compatible.enable = true;
-                # Enable device tree support
-                hardware.deviceTree.enable = true;
-
-                # Apply the overlays
-                hardware.deviceTree.overlays = [
-                  {
-                    name = &#34;pwm2&#34;;
-                    dtsFile = pwm-2-dts-file;
-                  }
-                  {
-                    name = &#34;pwm2-fan&#34;;
-                    dtsFile = pwm-2-fan-dts-file;
-                  }
-                ];
-
-                # Ensure the kernel has pwm-fan and pwm support
-                boot.kernelModules = lib.mkAfter [
-                  &#34;pwm-fan&#34;
-                  &#34;pwm-rockchip&#34;
-                ];
-
-              }
-            )
-
-          ];
-        };
-      };
-      packages = {
-        # For the target system
-        aarch64-linux.renegade = self.nixosConfigurations.renegade.config.system.build.sdImage;
-
-        # For your build system (x86_64)
-        x86_64-linux.renegade = self.nixosConfigurations.renegade.config.system.build.sdImage;
-      };
-
-    };
-}
-</code></pre> </div>
+<div class="highlight"><pre tabindex="0" style="color:#ebdbb2;background-color:#282828;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nix" data-lang="nix"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  description <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;NixOS SD card image for Libre Renegade (ROC-RK3328-CC)&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  inputs <span style="color:#fe8019">=</span> {
+</span></span><span style="display:flex;"><span>    nixpkgs<span style="color:#fe8019">.</span>url <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;github:NixOS/nixpkgs/nixos-25.05&#34;</span>;
+</span></span><span style="display:flex;"><span>  };
+</span></span><span style="display:flex;"><span>  outputs <span style="color:#fe8019">=</span>
+</span></span><span style="display:flex;"><span>    { self<span style="color:#fe8019">,</span> nixpkgs<span style="color:#fe8019">,</span> <span style="color:#fe8019">...</span> }<span style="color:#fe8019">@</span>inputs:
+</span></span><span style="display:flex;"><span>    <span style="color:#fe8019">let</span>
+</span></span><span style="display:flex;"><span>      pkgs <span style="color:#fe8019">=</span> <span style="color:#fe8019">import</span> nixpkgs { system <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;aarch64-linux&#34;</span>; };
+</span></span><span style="display:flex;"><span>      repo <span style="color:#fe8019">=</span> pkgs<span style="color:#fe8019">.</span>fetchFromGitHub {
+</span></span><span style="display:flex;"><span>        owner <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;libre-computer-project&#34;</span>;
+</span></span><span style="display:flex;"><span>        repo <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;libretech-wiring-tool&#34;</span>;
+</span></span><span style="display:flex;"><span>        rev <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;0078dc04ccb4daabc303d5cec1a4f4222db5b924&#34;</span>;
+</span></span><span style="display:flex;"><span>        hash <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;sha256-ZZvMetODFPamzqaMrf/EMvCS56ri0iKNG2UpKpOgQ4U=&#34;</span>;
+</span></span><span style="display:flex;"><span>      };
+</span></span><span style="display:flex;"><span>      pwm-2-dts-file <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;</span><span style="color:#b8bb26">${</span>repo<span style="color:#b8bb26">}</span><span style="color:#b8bb26">/libre-computer/roc-rk3328-cc/dt/pwm-2.dts&#34;</span>;
+</span></span><span style="display:flex;"><span>      pwm-2-fan-dts-file <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;</span><span style="color:#b8bb26">${</span>repo<span style="color:#b8bb26">}</span><span style="color:#b8bb26">/libre-computer/roc-rk3328-cc/dt/pwm-2-fan.dts&#34;</span>;
+</span></span><span style="display:flex;"><span>      fancontrol-script <span style="color:#fe8019">=</span> pkgs<span style="color:#fe8019">.</span>writeTextFile {
+</span></span><span style="display:flex;"><span>        name <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;fancontrol-script&#34;</span>;
+</span></span><span style="display:flex;"><span>        text <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">          from pathlib import Path
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">          import time
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">          fancontrol = Path(&#34;/sys/class/hwmon/hwmon0/pwm1&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">          cpu_temp = Path(&#34;/sys/class/hwmon/hwmon1/temp1_input&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">          cpu_handle = open(cpu_temp, &#34;r&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">          fan_handle = open(fancontrol, &#34;w&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">          while True:
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              temp = int(cpu_handle.read()) / 1000
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              cpu_handle.seek(0)
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              fan_speed = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              if temp &lt;= 50:
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">                  fan_speed = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              elif temp &lt;= 55:
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">                  fan_speed = 80
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              elif temp &lt;= 65:
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">                  fan_speed = 128
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              elif temp &lt;= 75:
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">                  fan_speed = 192
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              else:  # temp &gt; 75
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">                  fan_speed = 255
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              fan_handle.write(str(fan_speed))
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              fan_handle.seek(0)
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              print(f&#34;CPU Temp: {temp}, setting fan speed: {fan_speed}&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">              time.sleep(1)
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">        &#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>      };
+</span></span><span style="display:flex;"><span>      <span style="color:#fe8019">inherit</span> (nixpkgs) lib;
+</span></span><span style="display:flex;"><span>    <span style="color:#fe8019">in</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      nixosConfigurations <span style="color:#fe8019">=</span> {
+</span></span><span style="display:flex;"><span>        renegade <span style="color:#fe8019">=</span> nixpkgs<span style="color:#fe8019">.</span>lib<span style="color:#fe8019">.</span>nixosSystem {
+</span></span><span style="display:flex;"><span>          system <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;aarch64-linux&#34;</span>;
+</span></span><span style="display:flex;"><span>          modules <span style="color:#fe8019">=</span> [
+</span></span><span style="display:flex;"><span>            <span style="color:#b8bb26">&#34;</span><span style="color:#b8bb26">${</span>nixpkgs<span style="color:#b8bb26">}</span><span style="color:#b8bb26">/nixos/modules/installer/sd-card/sd-image-aarch64.nix&#34;</span>
+</span></span><span style="display:flex;"><span>            (
+</span></span><span style="display:flex;"><span>              {
+</span></span><span style="display:flex;"><span>                config<span style="color:#fe8019">,</span>
+</span></span><span style="display:flex;"><span>                lib<span style="color:#fe8019">,</span>
+</span></span><span style="display:flex;"><span>                pkgs<span style="color:#fe8019">,</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#fe8019">...</span>
+</span></span><span style="display:flex;"><span>              }:
+</span></span><span style="display:flex;"><span>              {
+</span></span><span style="display:flex;"><span>                systemd<span style="color:#fe8019">.</span>services<span style="color:#fe8019">.</span>simple-fan-control <span style="color:#fe8019">=</span> {
+</span></span><span style="display:flex;"><span>                  enable <span style="color:#fe8019">=</span> <span style="color:#d3869b">true</span>;
+</span></span><span style="display:flex;"><span>                  wantedBy <span style="color:#fe8019">=</span> [ <span style="color:#b8bb26">&#34;default.target&#34;</span> ];
+</span></span><span style="display:flex;"><span>                  description <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;Incredibly Simple python fan control script&#34;</span>;
+</span></span><span style="display:flex;"><span>                  serviceConfig <span style="color:#fe8019">=</span> {
+</span></span><span style="display:flex;"><span>                    Restart <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;always&#34;</span>;
+</span></span><span style="display:flex;"><span>                    RestartSec <span style="color:#fe8019">=</span> <span style="color:#d3869b">5</span>;
+</span></span><span style="display:flex;"><span>                    ExecStart <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#39;&#39;</span><span style="color:#b8bb26">${</span>pkgs<span style="color:#fe8019">.</span>python3<span style="color:#b8bb26">}</span><span style="color:#b8bb26">/bin/python </span><span style="color:#b8bb26">${</span>fancontrol-script<span style="color:#b8bb26">}</span><span style="color:#b8bb26">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>                  };
+</span></span><span style="display:flex;"><span>                };
+</span></span><span style="display:flex;"><span>                sdImage<span style="color:#fe8019">.</span>postBuildCommands <span style="color:#fe8019">=</span>
+</span></span><span style="display:flex;"><span>                  <span style="color:#fe8019">let</span>
+</span></span><span style="display:flex;"><span>                    rk3328-uboot <span style="color:#fe8019">=</span> <span style="color:#fabd2f">builtins</span><span style="color:#fe8019">.</span>fetchurl {
+</span></span><span style="display:flex;"><span>                      url <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;https://boot.libre.computer/ci/roc-rk3328-cc&#34;</span>;
+</span></span><span style="display:flex;"><span>                      sha256 <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;Y5yMmU/LyMVJi94vrYDpBM+4qwUfILwP+gVUToAXteA=&#34;</span>;
+</span></span><span style="display:flex;"><span>                    };
+</span></span><span style="display:flex;"><span>                  <span style="color:#fe8019">in</span>
+</span></span><span style="display:flex;"><span>                  <span style="color:#b8bb26">&#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">                    dd if=</span><span style="color:#b8bb26">${</span>rk3328-uboot<span style="color:#b8bb26">}</span><span style="color:#b8bb26"> of=$img conv=fsync,notrunc bs=512 seek=64
+</span></span></span><span style="display:flex;"><span><span style="color:#b8bb26">                  &#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>                boot<span style="color:#fe8019">.</span>loader<span style="color:#fe8019">.</span>generic-extlinux-compatible<span style="color:#fe8019">.</span>enable <span style="color:#fe8019">=</span> <span style="color:#d3869b">true</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#928374;font-style:italic"># Enable device tree support</span>
+</span></span><span style="display:flex;"><span>                hardware<span style="color:#fe8019">.</span>deviceTree<span style="color:#fe8019">.</span>enable <span style="color:#fe8019">=</span> <span style="color:#d3869b">true</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#928374;font-style:italic"># Apply the overlays</span>
+</span></span><span style="display:flex;"><span>                hardware<span style="color:#fe8019">.</span>deviceTree<span style="color:#fe8019">.</span>overlays <span style="color:#fe8019">=</span> [
+</span></span><span style="display:flex;"><span>                  {
+</span></span><span style="display:flex;"><span>                    name <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;pwm2&#34;</span>;
+</span></span><span style="display:flex;"><span>                    dtsFile <span style="color:#fe8019">=</span> pwm-2-dts-file;
+</span></span><span style="display:flex;"><span>                  }
+</span></span><span style="display:flex;"><span>                  {
+</span></span><span style="display:flex;"><span>                    name <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#34;pwm2-fan&#34;</span>;
+</span></span><span style="display:flex;"><span>                    dtsFile <span style="color:#fe8019">=</span> pwm-2-fan-dts-file;
+</span></span><span style="display:flex;"><span>                  }
+</span></span><span style="display:flex;"><span>                ];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#928374;font-style:italic"># Ensure the kernel has pwm-fan and pwm support</span>
+</span></span><span style="display:flex;"><span>                boot<span style="color:#fe8019">.</span>kernelModules <span style="color:#fe8019">=</span> lib<span style="color:#fe8019">.</span>mkAfter [
+</span></span><span style="display:flex;"><span>                  <span style="color:#b8bb26">&#34;pwm-fan&#34;</span>
+</span></span><span style="display:flex;"><span>                  <span style="color:#b8bb26">&#34;pwm-rockchip&#34;</span>
+</span></span><span style="display:flex;"><span>                ];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>              }
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>          ];
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>      };
+</span></span><span style="display:flex;"><span>      packages <span style="color:#fe8019">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#928374;font-style:italic"># For the target system</span>
+</span></span><span style="display:flex;"><span>        aarch64-linux<span style="color:#fe8019">.</span>renegade <span style="color:#fe8019">=</span> self<span style="color:#fe8019">.</span>nixosConfigurations<span style="color:#fe8019">.</span>renegade<span style="color:#fe8019">.</span>config<span style="color:#fe8019">.</span>system<span style="color:#fe8019">.</span>build<span style="color:#fe8019">.</span>sdImage;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#928374;font-style:italic"># For your build system (x86_64)</span>
+</span></span><span style="display:flex;"><span>        x86_64-linux<span style="color:#fe8019">.</span>renegade <span style="color:#fe8019">=</span> self<span style="color:#fe8019">.</span>nixosConfigurations<span style="color:#fe8019">.</span>renegade<span style="color:#fe8019">.</span>config<span style="color:#fe8019">.</span>system<span style="color:#fe8019">.</span>build<span style="color:#fe8019">.</span>sdImage;
+</span></span><span style="display:flex;"><span>      };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div> </div>
     <footer class="post-footer">
 
   <div class="post-footer-data">

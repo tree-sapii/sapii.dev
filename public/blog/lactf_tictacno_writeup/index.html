@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<meta charset="utf-8" />
+<meta name="author" content="Sapii" />
+
+<meta name="description" content="Sapii&#39;s Blog" />
+
+<meta name="keywords" content="blog, tech, hacking, rev, web, pwn, ctf" />
+
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<meta name="generator" content="Hugo 0.136.5">
+
+<link rel="canonical" href="//localhost:1313/blog/lactf_tictacno_writeup/">
+<meta property="og:url" content="//localhost:1313/blog/lactf_tictacno_writeup/">
+  <meta property="og:site_name" content="Sapii&#39;s Blog">
+  <meta property="og:title" content="Lactf_tictacno_writeup">
+  <meta property="og:description" content="I recently participated in the 2026 LACTF and had a blast! The specific challenge that I liked was called pwn/tic-tac-no.
+Overview We are told to nc in and get:
+You want the flag? You&#39;ll have to beat me first! | | ---|---|--- | | ---|---|--- | | Enter row #(1-3): Pretty self explanatory, you enter the row and column number and it puts the X in said spot and then gives the computer its turn.">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2026-02-07T12:22:47-05:00">
+    <meta property="article:modified_time" content="2026-02-07T12:22:47-05:00">
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Lactf_tictacno_writeup">
+  <meta name="twitter:description" content="I recently participated in the 2026 LACTF and had a blast! The specific challenge that I liked was called pwn/tic-tac-no.
+Overview We are told to nc in and get:
+You want the flag? You&#39;ll have to beat me first! | | ---|---|--- | | ---|---|--- | | Enter row #(1-3): Pretty self explanatory, you enter the row and column number and it puts the X in said spot and then gives the computer its turn.">
+
+
+  <meta itemprop="name" content="Lactf_tictacno_writeup">
+  <meta itemprop="description" content="I recently participated in the 2026 LACTF and had a blast! The specific challenge that I liked was called pwn/tic-tac-no.
+Overview We are told to nc in and get:
+You want the flag? You&#39;ll have to beat me first! | | ---|---|--- | | ---|---|--- | | Enter row #(1-3): Pretty self explanatory, you enter the row and column number and it puts the X in said spot and then gives the computer its turn.">
+  <meta itemprop="datePublished" content="2026-02-07T12:22:47-05:00">
+  <meta itemprop="dateModified" content="2026-02-07T12:22:47-05:00">
+  <meta itemprop="wordCount" content="465">
+
+<link rel="stylesheet" href="//localhost:1313/css/layout.css" />
+
+
+<link rel="stylesheet" href="//localhost:1313/css/default-dark.css" />
+
+
+
+
+<title>
+
+
+     Lactf_tictacno_writeup 
+
+</title>
+
+</head>
+
+
+<body>
+<div class="main">
+<header>
+
+<div class="header-bar">
+
+  <nav>
+    <div class="siteTitle">
+      <a href="//localhost:1313/">Sapii&#39;s Blog</a>
+    </div> 
+
+    
+    
+    <a class="nav-item" href="//localhost:1313/friends"><div class="nav-item-title">Friends</div></a>
+    
+    <a class="nav-item" href="//localhost:1313/about"><div class="nav-item-title">About</div></a>
+    
+    <a class="nav-item" href="//localhost:1313/blog/"><div class="nav-item-title">Blog</div></a>
+    
+    <a class="nav-item" href="//localhost:1313/tags/"><div class="nav-item-title">Tags</div></a>
+    
+
+  </nav>
+
+</div>
+
+</header>
+
+
+<article class="post">
+    <h1 class="title"> Lactf_tictacno_writeup </h1>
+    <div class="content"> <p>I recently participated in the <a href="https://platform.lac.tf/">2026 LACTF</a> and had a blast! The specific challenge that I liked was called pwn/tic-tac-no.</p>
+<h1 id="overview">Overview</h1>
+<p>We are told to nc in and get:</p>
+<pre tabindex="0"><code>You want the flag? You&#39;ll have to beat me first!
+   |   |
+---|---|---
+   |   |
+---|---|---
+   |   |
+
+Enter row #(1-3):
+</code></pre><p>Pretty self explanatory, you enter the row and column number and it puts the X in said spot and then gives the computer its turn.</p>
+<pre tabindex="0"><code>Enter row #(1-3): 1
+Enter column #(1-3): 2
+
+ O | X |
+---|---|---
+   |   |
+---|---|---
+   |   |
+
+Enter row #(1-3):
+</code></pre><p>Playing enough of this tic tac toe, you find out that its very hard to beat the other player, practically having a tie or losing everytime.</p>
+<h1 id="analysis">Analysis</h1>
+<div class="highlight"><pre tabindex="0" style="color:#ebdbb2;background-color:#282828;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#fabd2f">char</span> board[<span style="color:#d3869b">9</span>];
+</span></span><span style="display:flex;"><span><span style="color:#fabd2f">char</span> player <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#39;X&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#fabd2f">char</span> computer <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#39;O&#39;</span>;
+</span></span></code></pre></div><p>At the top of the file is the board list and the respective players.</p>
+<div class="highlight"><pre tabindex="0" style="color:#ebdbb2;background-color:#282828;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#fabd2f">void</span> <span style="color:#fabd2f">initializeBoard</span>();
+</span></span><span style="display:flex;"><span><span style="color:#fabd2f">void</span> <span style="color:#fabd2f">printBoard</span>();
+</span></span><span style="display:flex;"><span><span style="color:#fabd2f">int</span> <span style="color:#fabd2f">checkWin</span>();
+</span></span><span style="display:flex;"><span><span style="color:#fabd2f">int</span> <span style="color:#fabd2f">checkFreeSpaces</span>();
+</span></span><span style="display:flex;"><span><span style="color:#fabd2f">void</span> <span style="color:#fabd2f">playerMove</span>();
+</span></span><span style="display:flex;"><span><span style="color:#fabd2f">void</span> <span style="color:#fabd2f">perfectComputerMove</span>();
+</span></span><span style="display:flex;"><span><span style="color:#fabd2f">int</span> <span style="color:#fabd2f">minimax</span>(<span style="color:#fabd2f">char</span> board[<span style="color:#d3869b">9</span>], <span style="color:#fabd2f">int</span> depth, <span style="color:#fabd2f">bool</span> isMaximizing);
+</span></span></code></pre></div><p>Then there is a bunch of functions, the top are mainly to setup the board and display it, then logic to check the win condition, move the player and then the algorithm used by the computer. The algorithm is called <a href="https://en.wikipedia.org/wiki/Minimax">MiniMax</a> which works by playing out every single possible move by both the computer and player and assigning a score to each move, then picks the best score to move. It is looking into every possible future and picks the best one. Its so simple that it can&rsquo;t entirely be described as AI. This well works because the board state is finite and quite limited, making computation quick. This can exist for chess too, but it has to be limited in its depth ( how many nested futures it can look ) because there are more chess board combinations than atoms in the observable universe.<br><br>
+Logic for the player, which gives you a big score and tries to minimize it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#ebdbb2;background-color:#282828;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>      <span style="color:#fabd2f">int</span> bestScore <span style="color:#fe8019">=</span> <span style="color:#d3869b">1000</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#fe8019">for</span> (<span style="color:#fabd2f">int</span> i <span style="color:#fe8019">=</span> <span style="color:#d3869b">0</span>; i <span style="color:#fe8019">&lt;</span> <span style="color:#d3869b">9</span>; i<span style="color:#fe8019">++</span>) {
+</span></span><span style="display:flex;"><span>         <span style="color:#fe8019">if</span> (board[i] <span style="color:#fe8019">==</span> <span style="color:#b8bb26">&#39; &#39;</span>) {
+</span></span><span style="display:flex;"><span>            board[i] <span style="color:#fe8019">=</span> player;
+</span></span><span style="display:flex;"><span>            <span style="color:#fabd2f">int</span> score <span style="color:#fe8019">=</span> <span style="color:#fabd2f">minimax</span>(board, depth <span style="color:#fe8019">+</span> <span style="color:#d3869b">1</span>, <span style="color:#fabd2f">true</span>);
+</span></span><span style="display:flex;"><span>            board[i] <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#39; &#39;</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#fe8019">if</span> (score <span style="color:#fe8019">&lt;</span> bestScore) {
+</span></span><span style="display:flex;"><span>               bestScore <span style="color:#fe8019">=</span> score;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>         }
+</span></span></code></pre></div><p>Logic for the computer, which gives it a low score and then tried to maximize it by trying every move.</p>
+<div class="highlight"><pre tabindex="0" style="color:#ebdbb2;background-color:#282828;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>      <span style="color:#fabd2f">int</span> bestScore <span style="color:#fe8019">=</span> <span style="color:#fe8019">-</span><span style="color:#d3869b">1000</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#fe8019">for</span> (<span style="color:#fabd2f">int</span> i <span style="color:#fe8019">=</span> <span style="color:#d3869b">0</span>; i <span style="color:#fe8019">&lt;</span> <span style="color:#d3869b">9</span>; i<span style="color:#fe8019">++</span>) {
+</span></span><span style="display:flex;"><span>         <span style="color:#fe8019">if</span> (board[i] <span style="color:#fe8019">==</span> <span style="color:#b8bb26">&#39; &#39;</span>) {
+</span></span><span style="display:flex;"><span>            board[i] <span style="color:#fe8019">=</span> computer;
+</span></span><span style="display:flex;"><span>            <span style="color:#fabd2f">int</span> score <span style="color:#fe8019">=</span> <span style="color:#fabd2f">minimax</span>(board, depth <span style="color:#fe8019">+</span> <span style="color:#d3869b">1</span>, <span style="color:#fabd2f">false</span>);
+</span></span><span style="display:flex;"><span>            board[i] <span style="color:#fe8019">=</span> <span style="color:#b8bb26">&#39; &#39;</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#fe8019">if</span> (score <span style="color:#fe8019">&gt;</span> bestScore) {
+</span></span><span style="display:flex;"><span>               bestScore <span style="color:#fe8019">=</span> score;
+</span></span><span style="display:flex;"><span>            }
+</span></span></code></pre></div><h1 id="beat-minimax">Beat MiniMax?</h1>
+<p>Maybe this algorithm is limited in depth too?</p>
+<h1 id="mathematically-impossible">Mathematically Impossible</h1>
+<h1 id="out-of-bounds">Out of bounds?</h1>
+<h1 id="lets-pull-out-gdb">Lets pull out GDB</h1>
+<h1 id="game-plan">Game Plan</h1>
+<h1 id="trial-and-error">Trial and Error</h1>
+<h1 id="the-computer-playing-for-us">The computer playing for us</h1>
+<h1 id="win">Win!</h1>
+ </div>
+    <footer class="post-footer">
+
+  <div class="post-footer-data">
+            
+<div class="tags">
+  
+</div>
+
+    
+    <hr>
+    
+    <div class="date"> Published: 2026-02-07</div>
+    <div class="updated"> Updated:   2026-02-07</div>
+  </div>
+</footer>
+
+
+
+</article>
+
+  <footer>
+
+  <div class="social-links-footer">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div class="social-link">
+  
+  </div>
+
+</div>
+
+
+  <div class="copyright"> 
+    
+      © 2025 - Sapi or Sapii - This work is licensed under a <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/' rel='license'>Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+    
+  </div>
+
+  <div class="poweredby">
+     Powered by <a href="https://gohugo.io/">Hugo</a>.
+  </div>
+
+  </footer>
+
+</div> 
+
+</body>
+</html>
+

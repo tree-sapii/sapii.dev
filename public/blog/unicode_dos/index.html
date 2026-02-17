@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<meta charset="utf-8" />
+<meta name="author" content="Sapii" />
+
+<meta name="description" content="Sapii&#39;s Blog" />
+
+<meta name="keywords" content="blog, tech, hacking, rev, web, pwn, ctf" />
+
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<meta name="generator" content="Hugo 0.136.5">
+
+<link rel="canonical" href="//localhost:1313/blog/unicode_dos/">
+<meta property="og:url" content="//localhost:1313/blog/unicode_dos/">
+  <meta property="og:site_name" content="Sapii&#39;s Blog">
+  <meta property="og:title" content="Unicode Shenanigans">
+  <meta property="og:description" content="Intro to ASCII If you have ever taken a computer science class, you probably remember about ASCII characters. While it officially stands for “American Standard Code for Information Interchange”, you can think of it as standard that linking numbers to letters (and control codes), officially called “character encodings”. It encoded each letter as a seven-bit integer (0 to 127 values). 33 of the characters were control characters, which handled functions like line feeds and carriage returns for printers and their teletype systems.">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2025-11-30T18:39:41-05:00">
+    <meta property="article:modified_time" content="2025-11-30T18:39:41-05:00">
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Unicode Shenanigans">
+  <meta name="twitter:description" content="Intro to ASCII If you have ever taken a computer science class, you probably remember about ASCII characters. While it officially stands for “American Standard Code for Information Interchange”, you can think of it as standard that linking numbers to letters (and control codes), officially called “character encodings”. It encoded each letter as a seven-bit integer (0 to 127 values). 33 of the characters were control characters, which handled functions like line feeds and carriage returns for printers and their teletype systems.">
+
+
+  <meta itemprop="name" content="Unicode Shenanigans">
+  <meta itemprop="description" content="Intro to ASCII If you have ever taken a computer science class, you probably remember about ASCII characters. While it officially stands for “American Standard Code for Information Interchange”, you can think of it as standard that linking numbers to letters (and control codes), officially called “character encodings”. It encoded each letter as a seven-bit integer (0 to 127 values). 33 of the characters were control characters, which handled functions like line feeds and carriage returns for printers and their teletype systems.">
+  <meta itemprop="datePublished" content="2025-11-30T18:39:41-05:00">
+  <meta itemprop="dateModified" content="2025-11-30T18:39:41-05:00">
+  <meta itemprop="wordCount" content="253">
+
+<link rel="stylesheet" href="//localhost:1313/css/layout.css" />
+
+
+<link rel="stylesheet" href="//localhost:1313/css/default-dark.css" />
+
+
+
+
+<title>
+
+
+     Unicode Shenanigans 
+
+</title>
+
+</head>
+
+
+<body>
+<div class="main">
+<header>
+
+<div class="header-bar">
+
+  <nav>
+    <div class="siteTitle">
+      <a href="//localhost:1313/">Sapii&#39;s Blog</a>
+    </div> 
+
+    
+    
+    <a class="nav-item" href="//localhost:1313/friends"><div class="nav-item-title">Friends</div></a>
+    
+    <a class="nav-item" href="//localhost:1313/about"><div class="nav-item-title">About</div></a>
+    
+    <a class="nav-item" href="//localhost:1313/blog/"><div class="nav-item-title">Blog</div></a>
+    
+    <a class="nav-item" href="//localhost:1313/tags/"><div class="nav-item-title">Tags</div></a>
+    
+
+  </nav>
+
+</div>
+
+</header>
+
+
+<article class="post">
+    <h1 class="title"> Unicode Shenanigans </h1>
+    <div class="content"> <h1 id="intro-to-ascii">Intro to ASCII</h1>
+<p>If you have ever taken a computer science class, you probably remember about ASCII characters.
+While it officially stands for &ldquo;<strong>American Standard Code for Information Interchange</strong>&rdquo;, you can think of it as standard that linking numbers to letters (and control codes), officially called &ldquo;<strong>character encodings</strong>&rdquo;. It encoded each letter as a seven-bit integer (0 to 127 values). 33 of the characters were control characters, which handled functions like <strong>line feeds</strong> and <strong>carriage returns</strong> for printers and their teletype systems.</p>
+<h3 id="early-teletype-system">Early teletype system:</h3>
+<p><img src="//localhost:1313/images/Teletype.jpg" alt="" title="">
+
+
+<div class="cc-source" style="font-size: 0.8rem; color: #666;">
+    <span class="cc-source-label">Source:</span>
+      <span class="cc-source-creator">Rama &amp; Musée Bolo</span><span class="cc-source-sep"> · </span>
+      <span class="cc-source-title">“Teletype-IMG_7287.jpg”</span>
+      <span class="cc-source-url">
+        (<a href="https://commons.wikimedia.org/w/index.php?curid=36769003" rel="noopener noreferrer" target="_blank" style="color: inherit;">
+          https://commons.wikimedia.org/w/index.php?curid=36769003
+        </a>)
+      </span><span class="cc-source-license-wrapper">
+      — licensed under <span class="cc-source-license">CC BY 4.0</span>
+    </span>
+  </div>
+
+</p>
+<h1 id="intro-to-unicode">Intro to Unicode</h1>
+<p>Unicode itself came as an extension to ASCII. It still supports the same character encodings as ASCII (the literal numbers) as ASCII but is aimed to support all of the world&rsquo;s writing systems by using up to 4 <strong>bytes</strong> to store encoding numbers. As of UTF-8, it supports more than a million code points (sequence of bits, aka numbers). It has characters from almost every language and introduces special characters to append to character bytes to support the formatting of special characters, like ligatures for Arabian and the topic of this blog, <strong>Diacritics</strong>.</p>
+<h1 id="invisible-characters">Invisible characters</h1>
+<p>Before we get to Diacritics, we must learn about some introduction from Unicode, <strong>the invisible and non-printable characters</strong>. Going to <a href="https://invisible-characters.com/">invisible-characters.com</a>, you get a list of all the these types of characters. Some of them are like the simple Space, which you can highlight:</p>
+<pre tabindex="0"><code> 
+</code></pre><p>Or the Zero Width Space, which can&rsquo;t be highlighted:</p>
+<pre tabindex="0"><code>​
+</code></pre> </div>
+    <footer class="post-footer">
+
+  <div class="post-footer-data">
+            
+<div class="tags">
+  
+</div>
+
+    
+    <hr>
+    
+    <div class="date"> Published: 2025-11-30</div>
+    <div class="updated"> Updated:   2025-11-30</div>
+  </div>
+</footer>
+
+
+
+</article>
+
+  <footer>
+
+  <div class="social-links-footer">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div class="social-link">
+  
+  </div>
+
+</div>
+
+
+  <div class="copyright"> 
+    
+      © 2025 - Sapi or Sapii - This work is licensed under a <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/' rel='license'>Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+    
+  </div>
+
+  <div class="poweredby">
+     Powered by <a href="https://gohugo.io/">Hugo</a>.
+  </div>
+
+  </footer>
+
+</div> 
+
+</body>
+</html>
+
