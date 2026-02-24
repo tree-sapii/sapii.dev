@@ -103,13 +103,12 @@ Trying center:
 ```
 
 Doesn't seem to work, it will always fill up the side opposite to the side we played in, to hopefully score a vertical or horizontal win.
-
-
-
-# Mathematically Impossible 
-
+And testing all of the answers from Quora, it seems that it plays them perfectly :(
+<br>
+Even being so simple, this algorithm is quite literally **mathematically impossible** to beat. Check out this [blog](https://www.neverstopbuilding.com/blog/minimax) for more details.
 
 # Out of bounds?
+
 
 
 # Lets pull out GDB
