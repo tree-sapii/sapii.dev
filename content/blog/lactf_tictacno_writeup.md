@@ -55,28 +55,28 @@ int minimax(char board[9], int depth, bool isMaximizing);
 Then there is a bunch of functions, the top are mainly to setup the board and display it, then logic to check the win condition, move the player and then the algorithm used by the computer. The algorithm is called [MiniMax](https://en.wikipedia.org/wiki/Minimax) which works by playing out every single possible move by both the computer and player and assigning a score to each move, then picks the best score to move. It is looking into every possible future and picks the best one. Its so simple that it can't entirely be described as AI. This well works because the board state is finite and quite limited, making computation quick. This can exist for chess too, but it has to be limited in its depth ( how many nested futures it can look ) because there are more chess board combinations than atoms in the observable universe.<br><br>
 Logic for the player, which gives you a big score and tries to minimize it.
 ```c {style=gruvbox}
-      int bestScore = 1000;
-      for (int i = 0; i < 9; i++) {
-         if (board[i] == ' ') {
-            board[i] = player;
-            int score = minimax(board, depth + 1, true);
-            board[i] = ' ';
-            if (score < bestScore) {
-               bestScore = score;
-            }
-         }
+int bestScore = 1000;
+for (int i = 0; i < 9; i++) {
+   if (board[i] == ' ') {
+      board[i] = player;
+      int score = minimax(board, depth + 1, true);
+      board[i] = ' ';
+      if (score < bestScore) {
+         bestScore = score;
+      }
+   }
 ```
 Logic for the computer, which gives it a low score and then tried to maximize it by trying every move.
 ```c {style=gruvbox}
-      int bestScore = -1000;
-      for (int i = 0; i < 9; i++) {
-         if (board[i] == ' ') {
-            board[i] = computer;
-            int score = minimax(board, depth + 1, false);
-            board[i] = ' ';
-            if (score > bestScore) {
-               bestScore = score;
-            }
+int bestScore = -1000;
+for (int i = 0; i < 9; i++) {
+   if (board[i] == ' ') {
+      board[i] = computer;
+      int score = minimax(board, depth + 1, false);
+      board[i] = ' ';
+      if (score > bestScore) {
+         bestScore = score;
+      }
 
 ```
 
@@ -215,7 +215,10 @@ At row -4 and column -7, we successfully corrupt the computer's variable, making
 ```bash
 0x555555558050 <player>:        88 'X'  88 'X'  0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'
 ```
+<br>
 And we got it, `How's this possible? Well, I guess I'll have to give you the flag now.`!
+<br>
+
 `lactf{th3_0nly_w1nn1ng_m0ve_1s_t0_p1ay}`
 
 
